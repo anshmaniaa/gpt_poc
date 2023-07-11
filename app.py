@@ -39,7 +39,11 @@ select_variable = st.sidebar.selectbox(
         "biopsy",
         "colonoscopy",
         "mode_of_admin",
-        "blood_draw"
+        "blood_draw",
+        "caregiver",
+        "discontinue_treatment",
+        "inpatient_trial",
+        "trial_type"
     ])
 
 if "openai_model" not in st.session_state:
@@ -59,7 +63,7 @@ if select_file:
     with col1:
         DisplayDocument(f"protocols/{select_file}").displayPDF()
     with col2:
-        st.subheader("Prompt")
+        st.subheader("Question")
         st.write(prompt["messages"][1]["content"])    
     with col3:
         st.subheader("Answer")
