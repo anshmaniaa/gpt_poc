@@ -19,11 +19,11 @@ Base = declarative_base()
 
 CONNECTION_STRING = PGVector.connection_string_from_db_params(
     driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"),
-    host=os.environ.get("PGVECTOR_HOST", "localhost"),
+    host=os.environ.get("PGVECTOR_HOST", "vector-db-iqvia.c01dryusnrkr.ap-south-1.rds.amazonaws.com"),
     port=int(os.environ.get("PGVECTOR_PORT", "5432")),
     database=os.environ.get("PGVECTOR_DATABASE", "postgres"),
     user=os.environ.get("PGVECTOR_USER", "postgres"),
-    password=os.environ.get("PGVECTOR_PASSWORD", "postgres"),
+    password=os.environ.get("PGVECTOR_PASSWORD", "Anshmania2020"),
 )
 class ProcessedDocument(Base):
     __tablename__ = 'processed_documents'
@@ -70,6 +70,11 @@ class VectorDB(PGVector):
     def get_document_names(self):
         with Session(self.engine) as session:
             return [name[0] for name in session.query(ProcessedDocument.name).all()]
+        
+    def create_extension(self):
+        with Session(self.engine) as session:
+            session.execute("CREATE EXTENSION vector;")
+            session.commit()
 
 class ProcessDocument:
     def __init__(self, path):
