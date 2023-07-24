@@ -61,7 +61,7 @@ class VectorDB(PGVector):
     def get_context(self, query, document_name=None):
         if document_name:
             filter = {"source":f"protocols/{document_name}"}
-            results = self.similarity_search_with_score(query,filter=filter,k=5)
+            results = self.similarity_search_with_score(query, filter=filter, k=5)
             return " ".join([c[0].page_content for c in results])
         else:
             results = self.similarity_search_with_score(query,k=5)
