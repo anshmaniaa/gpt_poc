@@ -6,7 +6,7 @@
         },
         {
             "role":"user",
-            "content":"Is 'Biopsy' done during this study? If yes, how many times?"
+            "content":"Is 'Biopsy' done during this study? If yes, how many times? Return either Y or N. Do not return any additional text. Simply Answer in format as 'biopsy'=''"
         }
     ]
 }

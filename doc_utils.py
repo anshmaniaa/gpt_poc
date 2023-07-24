@@ -19,7 +19,7 @@ Base = declarative_base()
 
 CONNECTION_STRING = PGVector.connection_string_from_db_params(
     driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"),
-    host=os.environ.get("PGVECTOR_HOST", "vector-db-iqvia.c01dryusnrkr.ap-south-1.rds.amazonaws.com"),
+    host=os.environ.get("PGVECTOR_HOST", "localhost"),
     port=int(os.environ.get("PGVECTOR_PORT", "5432")),
     database=os.environ.get("PGVECTOR_DATABASE", "postgres"),
     user=os.environ.get("PGVECTOR_USER", "postgres"),
@@ -33,7 +33,7 @@ class ProcessedDocument(Base):
 class VectorDB(PGVector):
     def __init__(self):
         self.connection_string = CONNECTION_STRING
-        self.embedding_function = OpenAIEmbeddings(openai_api_key="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")
+        self.embedding_function = OpenAIEmbeddings(openai_api_key="")
         self.collection_name = "protocols"
         self.engine = create_engine(self.connection_string)
         self.metadata = MetaData()
@@ -49,7 +49,7 @@ class VectorDB(PGVector):
         with Session(self.engine) as session:
             return session.query(exists().where(ProcessedDocument.name == document_name)).scalar()
             
-    def add_processed_document(self, document_name):
+    def add_processed_document(self, document_name, overwrite=None):
         with Session(self.engine) as session:
             processed_document = ProcessedDocument(name=document_name)
             session.add(processed_document)

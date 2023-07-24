@@ -6,7 +6,7 @@
         },
         {
             "role":"user",
-            "content":"Is a caregiver or parent or assisstant required during this study?"
+            "content":"Is a caregiver or parent or assisstant required during this study?Return either Y or N. Answer in format as 'caregiver'=''"
         }
     ]
 }

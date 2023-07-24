@@ -6,7 +6,7 @@
         },
         {
             "role":"user",
-            "content":"Is Blood Drawn during this study? If yes, how many times?"
+            "content":"Is Blood Drawn during this study? If yes, how many times?Return either Y or N. Answer in format as 'blood_draw'=''"
         }
     ]
 }

@@ -43,11 +43,13 @@ select_variable = st.sidebar.selectbox(
         "caregiver",
         "discontinue_treatment",
         "inpatient_trial",
-        "trial_type"
+        "trial_type",
+        "comparator_drug_mode_admin",
+        "comparator_drug_arm"
     ])
 
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = 'gpt-3.5-turbo-16k-0613'
+    st.session_state["openai_model"] = 'gpt-3.5-turbo-0613'
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -56,9 +58,13 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+def compose_prompt(context, content):
+    return "Context: " + context + "\n\n" + "Question: " + content + "\n\n"
+
 if select_file:
     prompt = PromptLoader(f"{select_variable}.json").prompt
     context = vector_db.get_context(prompt["messages"][1]["content"], select_file)
+
     col1, col2, col3 = st.columns([0.6,0.2,0.2])
     with col1:
         DisplayDocument(f"protocols/{select_file}").displayPDF()
@@ -67,14 +73,14 @@ if select_file:
         st.write(prompt["messages"][1]["content"])    
     with col3:
         st.subheader("Answer")
-        prompt["messages"][1]["content"] = context + "\n\n" + prompt["messages"][1]["content"]
+        prompt["messages"][1]["content"] = compose_prompt(context, prompt["messages"][1]["content"])
         message_placeholder = st.empty()
         full_response = ""
         for response in openai.ChatCompletion.create(
             model=st.session_state["openai_model"],
             messages=prompt["messages"],
             stream=True,
-            temperature=1.0,
+            temperature=0.5,
         ):
             full_response += response.choices[0].delta.get("content", "")
             message_placeholder.markdown(full_response + "▌")

@@ -6,7 +6,7 @@
         },
         {
             "role":"user",
-            "content":"What percentage of participants receive placebo for some period during the trial? Enter a number 0-100%"
+            "content":"What percentage of participants receive placebo for some period during the trial? Return only a number between 0-100%"
         }
     ]
 }
