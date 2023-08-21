@@ -13,13 +13,14 @@ from sqlalchemy import inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql import exists
+from sqlalchemy import text
 import json
 
 Base = declarative_base()
 
 CONNECTION_STRING = PGVector.connection_string_from_db_params(
     driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"),
-    host=os.environ.get("PGVECTOR_HOST", "localhost"),
+    host=os.environ.get("PGVECTOR_HOST", "vector-db-iqvia.c01dryusnrkr.ap-south-1.rds.amazonaws.com"),
     port=int(os.environ.get("PGVECTOR_PORT", "5432")),
     database=os.environ.get("PGVECTOR_DATABASE", "postgres"),
     user=os.environ.get("PGVECTOR_USER", "postgres"),
@@ -31,10 +32,11 @@ class ProcessedDocument(Base):
     name = Column(String, unique=True)
 
 class VectorDB(PGVector):
-    def __init__(self):
-        self.connection_string = CONNECTION_STRING
-        self.embedding_function = OpenAIEmbeddings(openai_api_key="")
-        self.collection_name = "protocols"
+    def __init__(self, connection_string=CONNECTION_STRING, embedding_function=None, collection_name="protocols", openai_api_key=None):
+        self.connection_string = connection_string
+        self.openai_api_key = openai_api_key
+        self.embedding_function = OpenAIEmbeddings(openai_api_key=self.openai_api_key)
+        self.collection_name = collection_name
         self.engine = create_engine(self.connection_string)
         self.metadata = MetaData()
 
@@ -62,7 +64,7 @@ class VectorDB(PGVector):
         if document_name:
             filter = {"source":f"protocols/{document_name}"}
             results = self.similarity_search_with_score(query, filter=filter, k=5)
-            return " ".join([c[0].page_content for c in results])
+            return " ".join([c[0].page_content + str("Chunk Number: ",i) for i,c in enumerate(results)])
         else:
             results = self.similarity_search_with_score(query,k=5)
             return " ".join([c[0].page_content for c in results])
@@ -73,7 +75,7 @@ class VectorDB(PGVector):
         
     def create_extension(self):
         with Session(self.engine) as session:
-            session.execute("CREATE EXTENSION vector;")
+            session.execute(text("CREATE EXTENSION vector;"))
             session.commit()
 
 class ProcessDocument:
@@ -93,6 +95,9 @@ class ProcessDocument:
             chunk_overlap=0,
         )
             return text_splitter.split_documents(raw_documents)
+        
+    def analyze_chunks(self):
+        pass
     
 class SaveFileToDisk:
     def __init__(self, uploaded_file, vector_db, directory="protocols"):

@@ -1,12 +1,23 @@
+import sys
 import os
+from gptcache import get_data_manager
+from gptcache.core import cache, Cache
+from gptcache.adapter import openai
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(dir_path)
+sys.path.append(parent_dir)
+
 import openai
 import streamlit as st
-from doc_utils import SaveFileToDisk, VectorDB, ProcessDocument, PromptLoader, DisplayDocument
+from db.utils import SaveFileToDisk, VectorDB, ProcessDocument, PromptLoader, DisplayDocument
+
 st.set_page_config(layout="wide")
 
 st.title("ProtoGPT")
-
+cache.init(data_manager=get_data_manager())
 openai.api_key = os.getenv("OPENAI_API_KEY")
+cache.set_openai_key()
 
 uploaded_file = st.sidebar.file_uploader(
     "Upload a protocol", 
@@ -64,10 +75,11 @@ def compose_prompt(context, content):
 if select_file:
     prompt = PromptLoader(f"{select_variable}.json").prompt
     context = vector_db.get_context(prompt["messages"][1]["content"], select_file)
-
+    
     col1, col2, col3 = st.columns([0.6,0.2,0.2])
     with col1:
-        DisplayDocument(f"protocols/{select_file}").displayPDF()
+        st.tabs(context)
+        #DisplayDocument(f"protocols/{select_file}").displayPDF()
     with col2:
         st.subheader("Question")
         st.write(prompt["messages"][1]["content"])    

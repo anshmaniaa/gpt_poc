@@ -1,7 +1,15 @@
+import sys
 import os
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(dir_path)
+sys.path.append(parent_dir)
+
+
 import openai
 import streamlit as st
-from doc_utils import SaveFileToDisk, VectorDB, ProcessDocument
+
+from db.utils import SaveFileToDisk, VectorDB, ProcessDocument
 
 st.title("ProtoGPT")
 
@@ -33,7 +41,7 @@ select_file = st.sidebar.selectbox(
     index=0
 )
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = 'gpt-3.5-turbo-16k-0613'
+    st.session_state["openai_model"] = 'gpt-3.5-turbo'
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
