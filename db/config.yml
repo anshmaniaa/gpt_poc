@@ -1,0 +1,29 @@
+DB:
+  DRIVER: psycopg2
+  HOST: vector-db-iqvia.c01dryusnrkr.ap-south-1.rds.amazonaws.com
+  PORT: 5432
+  DATABASE: postgres
+  USER: postgres
+  PASSWORD: Anshmania2020
+  
+INPUT_TABLES:
+  FULL_TEXT:
+    TABLE_NAME: full_text
+    COLUMN_NAMES: [id, text, created_at, updated_at]
+  ASSESSMENTS:
+    TABLE_NAME: assessments
+    COLUMN_NAMES: [id, text, created_at, updated_at]
+  VISITS:
+    TABLE_NAME: visits
+    COLUMN_NAMES: [id, text, created_at, updated_at]
+
+OUTPUT_TABLES:
+  GT:
+    TABLE_NAME: gt
+    COLUMN_NAMES: [id, text, created_at, updated_at]
+  COLLECTION:
+    TABLE_NAME: langchain_pg_collection
+    COLUMN_NAMES: [id, text, created_at, updated_at]
+  EMBEDDINGS:
+    TABLE_NAME: langchain_pg_embedding
+    COLUMN_NAMES: [id, text, created_at, updated_at]

@@ -18,12 +18,19 @@ def main(doc_id):
 if __name__ == '__main__':
     argparse = argparse.ArgumentParser()
     argparse.add_argument('--doc_id', type=str, help='document id')
+    argparse.add_argument('--file_path', type=str, help='document file path')
+    
     args = argparse.parse_args()
-
     doc_id = args.doc_id
+    file_path = args.file_path
+
     if doc_id is not None:
         main(doc_id)
+    if file_path is not None:
+        vector_db = VectorDB()
+        raw_chunks = ProcessDocument(file_path).load_and_chunk(strategy=None)
+        vector_db.add_documents(ProcessDocument(file_path).load_and_chunk())
     else:
-        print("Please provide a document id.")
+        print("Please provide a document id or file path")
 
     
